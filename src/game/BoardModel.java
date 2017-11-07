@@ -1,4 +1,6 @@
 package game;
+import javax.swing.event.*;
+import java.util.*;
 
 /**
  * This is model part of the program. It holds the board information
@@ -13,6 +15,8 @@ public class BoardModel {
 	int[] boardB;
 	int defaultStones; 
 	boolean playerBTurn; // false = Player A, true = player B
+	
+	private ArrayList<ChangeListener> listeners;
 
 	public BoardModel() 
 	{
@@ -22,6 +26,8 @@ public class BoardModel {
 		
 		// Player A always starts first
 		playerBTurn = false;
+		
+		listeners = new ArrayList<ChangeListener>();
 	}
 	
 	/**
@@ -113,6 +119,12 @@ public class BoardModel {
 		 */
 		public void placeStones(boolean playerBTurn, int pit) 
 		{
+			//when stones are moved, notify the change listener
+			// Notify all observers of the change to the invoice
+		     ChangeEvent event = new ChangeEvent(this);
+		     for (ChangeListener listener : listeners)
+		        listener.stateChanged(event);
+			
 			if (pit == 7) 
 			{
 				System.out.println("Can Not Choose The Mancala");
@@ -195,4 +207,14 @@ public class BoardModel {
 			goThroughBoardA(stonesLeft, 0);
 		}
 	}
+	
+	/**
+    		Adds a change listener to the board model
+    		@param listener the change listener to add
+	 */
+	public void addChangeListener(ChangeListener listener)
+	{    
+		listeners.add(listener); 
+	}
+
 }

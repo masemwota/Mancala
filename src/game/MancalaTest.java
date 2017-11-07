@@ -10,8 +10,9 @@ public class MancalaTest
 	{
 		//to start the game
 	
-		BoardModel barModel = new BoardModel(); 
+		BoardModel boardModel = new BoardModel(); 
 		//barModel.addStones(4);
-		BoardComponent myFrame = new BoardComponent(barModel);
+		BoardComponent myFrame = new BoardComponent(boardModel);
+		boardModel.addChangeListener(myFrame);
 	}
 }

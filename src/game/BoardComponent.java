@@ -28,6 +28,7 @@ public class BoardComponent extends JComponent implements ChangeListener
     //we are going to use panels like screens and switch back and forth
     private JPanel panel;
     private JPanel panel1;
+    private JPanel pitsPanel;
     private int pitCounterA;
     private int pitCounterB;
     
@@ -78,16 +79,13 @@ public class BoardComponent extends JComponent implements ChangeListener
                             button1.setText("3 Stones");
                             button2.setText("4 Stones");
                             designChosen = true;
-                            design = 1;
                             b = new DesignA();
                         }
                         else //design already chosen -- choose stones
                         {
                             System.out.println("3 Stones chosen");
-                            stonesChosen = true;
                             stones = 3;
 
-                            //b = new DesignA();
                             drawBoard(b);
 
                             frame.remove(panel);
@@ -114,7 +112,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                             button1.setText("3 Stones");
 
                             designChosen = true;
-                            design = 2;
                             b = new DesignB();
                         }
                         else
@@ -152,7 +149,8 @@ public class BoardComponent extends JComponent implements ChangeListener
 
 
         //pits panel
-        JPanel pitsPanel = new JPanel();
+        //JPanel pitsPanel = new JPanel();
+        pitsPanel = new JPanel();
         pitsPanel.setLayout(new GridLayout(2, 6, 5, 5));
         //B6-B1
         for(pitCounterB = 5; pitCounterB >= 0; pitCounterB--){
@@ -169,7 +167,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                         System.out.println("move stones");
                         boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
                         boardModel.setTurn();
-                        repaint();
+                        System.out.println("Player A turn now");
                     }
                 }
             });
@@ -196,9 +194,9 @@ public class BoardComponent extends JComponent implements ChangeListener
                     	
                         System.out.println("move stones");
                         boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
-                        System.out.println("Inside of clicked): " + pitCount.pitsIndex);
+                        System.out.println("Inside of clicked: " + pitCount.pitsIndex);
                         boardModel.setTurn();
-                        repaint();
+                        System.out.println("Player B turn now");
                     }
                 }
             });
@@ -256,7 +254,6 @@ public class BoardComponent extends JComponent implements ChangeListener
         frame.add(panel1);
         frame.pack();
         frame.setVisible(true);
-        repaint();
 
     }
 
@@ -338,7 +335,8 @@ public class BoardComponent extends JComponent implements ChangeListener
     }
 
     @Override
-    public void stateChanged(ChangeEvent e) {
-
+    public void stateChanged(ChangeEvent e) 
+    {
+    		panel1.repaint();
     }
 }
