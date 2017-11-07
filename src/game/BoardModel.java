@@ -69,6 +69,11 @@ public class BoardModel {
 	{
 		return boardB;
 	}
+	
+	public void setTurn()
+	{
+		playerBTurn = !playerBTurn;
+	}
 
 	public void printStones()
 	{
