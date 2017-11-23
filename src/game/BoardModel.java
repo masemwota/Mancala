@@ -16,6 +16,7 @@ public class BoardModel {
 	int defaultStones; 
 	boolean playerBTurn; // false = Player A, true = player B
 	int numToAdd; //number to add to each pit -- standard is 1
+	int stonesEmpty; //stones left in the pit after taken from -- standard is 0
 	
 	private ArrayList<ChangeListener> listeners;
 	private ArrayList<String> moves; //list of moves to help with undo
@@ -27,6 +28,7 @@ public class BoardModel {
 		boardA = new int[7];
 		boardB = new int[7];
 		defaultStones = 0; 
+		stonesEmpty = 0;
 		
 		// Player A always starts first
 		playerBTurn = false;
@@ -174,8 +176,6 @@ public class BoardModel {
 			int stonesLeft;
 			
 			String move = ""; //to keep track of this move 
-			//stack.push(move);
-			
 	
 			if (!playerBTurn) // Player A's turn
 			{
@@ -185,7 +185,7 @@ public class BoardModel {
 				move += pit;
 				move += stonesLeft;
 				
-				boardA[pit - 1] = 0; 			// all stones are taken from the chosen pit
+				boardA[pit - 1] = stonesEmpty; 	// all stones are taken from the chosen pit
 
 				// go through board A starting from chosen pit
 				goThroughBoardA(stonesLeft, pit);
@@ -203,7 +203,7 @@ public class BoardModel {
 				move += pit;
 				move += stonesLeft;
 				
-				boardB[pit - 1] = 0;
+				boardB[pit - 1] = stonesEmpty;
 
 				goThroughBoardB(stonesLeft, pit);
 				setTurn(); // opponents turn
@@ -237,7 +237,7 @@ public class BoardModel {
 			{
 				if(i == 6 && playerBTurn) // if its Players B turn, skip the Player's A mancala
 				{
-					continue;
+					//continue;
 				}
 				boardA[i] = boardA[i] + numToAdd;
 				stonesLeft--;
@@ -263,7 +263,7 @@ public class BoardModel {
 			{
 				if(i == 6 && !playerBTurn) //if its Players A turn, skip the Player's B mancala
 				{
-					continue;
+					//continue;
 				}
 				boardB[i] = boardB[i] + numToAdd;
 				stonesLeft--;
@@ -272,6 +272,70 @@ public class BoardModel {
 		if(stonesLeft > 0)
 		{
 			goThroughBoardA(stonesLeft, 0);
+		}
+	}
+	
+	
+	public int getUndo()
+	{
+		return undoChances;
+	}
+	
+	
+	/**
+	 * Undo the last move
+	 * @return true if move is undone 
+	 * @return false is no more chances
+	 */
+	public boolean undo()
+	{
+		if(undoChances > 0) 
+		{
+			String move = stack.pop();
+			undoChances--;
+			String player = move.substring(0,1); 
+			String pitStr = move.substring(1, 2); 
+			String stonesStr = move.substring(2);
+			
+			int pit = Integer.parseInt(pitStr); 
+			int stone = Integer.parseInt(stonesStr);
+			
+			System.out.println("Player " + player + " turn on pit " + pit + " and " + stone + "stones");
+			
+			//undo the action by putting stones back in pit and calling placeStones with -1
+			numToAdd = -1;
+			stonesEmpty = stone;
+			
+			//get the board and correct pit 
+			if(player.equals("A"))
+			{
+				boardA[pit - 1] = stone; 
+				placeStones(false, pit);
+			}
+			
+			else //player B
+			{
+				boardB[pit - 1] = stone; 
+				placeStones(true, pit);
+			}
+			
+			//because place stones adds to the stack and increment chances
+			undoChances--;
+			stack.pop();
+			
+			//after done
+			//reset to default values
+			numToAdd = 1;
+			stonesEmpty = 0;
+			
+			return true;
+		}
+		
+		
+		else
+		{
+			System.out.println("There are no more undo chances");
+			return false;
 		}
 	}
 	

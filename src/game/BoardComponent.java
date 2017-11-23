@@ -167,7 +167,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                     {
                         JOptionPane.showMessageDialog(label, "This pit doesn't belongs to you");
                     }
-                    // If clicked on an empty pit, pop up message
+                    	//If clicked on an empty pit, pop up message
                     else if(boardModel.isEmpty(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1))
 					{
 						JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
@@ -249,13 +249,9 @@ public class BoardComponent extends JComponent implements ChangeListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Undo called");
-                //if(this.boardModel.getUndo() > 0){
-                //this.boardModel.undo();
-                //undo.setText("undo" + this.boardModel.getUndo());
-                //}
-                //else{
-                //  no more undo chance!
-                //}
+                boolean actionUndone = boardModel.undo();
+                if(!actionUndone)
+                	JOptionPane.showMessageDialog(null, "There are no more undo chances");
             }
         });
         southPanel.add(undo);//end undo panel
