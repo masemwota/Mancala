@@ -161,23 +161,32 @@ public class BoardComponent extends JComponent implements ChangeListener
             label.addMouseListener(new MouseAdapter() 
             {
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                	
-                    if (!boardModel.playerBTurn)
-                    {
-                        JOptionPane.showMessageDialog(label, "This pit doesn't belongs to you");
-                    }
-                    	//If clicked on an empty pit, pop up message
-                    else if(boardModel.isEmpty(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1))
-					{
-						JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
+				public void mouseClicked(MouseEvent e) {
+                		//if a move is already made 
+                		System.out.println("Undo chances: " + boardModel.stackIsEmpty()); 
+					if (boardModel.stackIsEmpty()) {
+						if (!boardModel.playerBTurn) 
+						{
+							JOptionPane.showMessageDialog(label, "This pit doesn't belongs to you");
+						}
+						// If clicked on an empty pit, pop up message
+						else if (boardModel.isEmpty(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1)) 
+						{
+							JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
+						} 
+						
+						else 
+						{
+							System.out.println("Player B Move Read");
+							boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1);
+						}
 					}
-                    else
-                    {
-						System.out.println("Player B Move Read");
-						boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1);
-                    }
-                }
+					
+					else 
+					{
+						JOptionPane.showMessageDialog(null, "A move has already been made. Either undo it or mark it as done");
+					}
+				}
             });
             pitsPanel.add(label);
         }
@@ -195,21 +204,31 @@ public class BoardComponent extends JComponent implements ChangeListener
 				@Override
 				public void mouseClicked(MouseEvent e) 
 				{
-					if (boardModel.playerBTurn) 
+					System.out.println("Undo chances: " + boardModel.stackIsEmpty());
+					if(boardModel.stackIsEmpty())
 					{
-						JOptionPane.showMessageDialog(null, "This pit doesn't belong to you");
-					} 
-					// If clicked on an empty pit, pop up message
-					else if(boardModel.isEmpty(boardModel.playerBTurn, pitCount.pitsIndex + 1))
-					{
-						JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
+
+						if (boardModel.playerBTurn) 
+						{
+							JOptionPane.showMessageDialog(null, "This pit doesn't belong to you");
+						} 
+						// If clicked on an empty pit, pop up message
+						else if(boardModel.isEmpty(boardModel.playerBTurn, pitCount.pitsIndex + 1))
+						{
+							JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
+						}
+						else 
+						{
+							System.out.println("Player A Move Read");
+					
+							boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
+							// System.out.println("Inside of clicked: " + pitCount.pitsIndex);
+						}
 					}
+					
 					else 
 					{
-						System.out.println("Player A Move Read");
-				
-						boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
-						// System.out.println("Inside of clicked: " + pitCount.pitsIndex);
+						JOptionPane.showMessageDialog(null, "A move has already been made. Either undo it or mark it as done");
 					}
 				}
 			});
@@ -251,10 +270,34 @@ public class BoardComponent extends JComponent implements ChangeListener
                 System.out.println("Undo called");
                 boolean actionUndone = boardModel.undo();
                 if(!actionUndone)
-                	JOptionPane.showMessageDialog(null, "There are no more undo chances");
+                	JOptionPane.showMessageDialog(null, "There are no more undo chances. Mark move as done.");
             }
         });
+        
+        //timer
+        JButton moveDone = new JButton("Move done"); 
+        moveDone.addActionListener(
+        		new ActionListener()
+        		{
+        			public void actionPerformed(ActionEvent e)
+        			{
+        				if(boardModel.stack.isEmpty())
+                        	JOptionPane.showMessageDialog(null, "Make a move first");
+        				else
+        				{
+        					System.out.println("Move is done");
+            				boardModel.setTurn();
+            				boardModel.emptyStack();
+        				}
+        				
+        				//clear the stack 
+        				
+        			}
+        		});
+        
+        
         southPanel.add(undo);//end undo panel
+        southPanel.add(moveDone);
         
 
         //JPanel playerTurn = new JPanel();
@@ -376,11 +419,12 @@ public class BoardComponent extends JComponent implements ChangeListener
     public void stateChanged(ChangeEvent e)
     {
         panel1.repaint();
-        //change turns 
-        if(boardModel.playerBTurn)
-    			playerText.setText("Player A Turn");
     
-        else
-    			playerText.setText("Player B Turn");
+        if(boardModel.playerBTurn)
+			playerText.setText("Player B Turn");
+
+		else
+			playerText.setText("Player A Turn");
+  
     }
 }

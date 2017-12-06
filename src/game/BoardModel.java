@@ -22,6 +22,7 @@ public class BoardModel {
 	private ArrayList<String> moves; //list of moves to help with undo
 	Deque<String> stack;
 	private int undoChances; 
+	private int playerUndoChances; 
 
 	public BoardModel() 
 	{
@@ -38,6 +39,8 @@ public class BoardModel {
 		
 		stack = new ArrayDeque<String>();
 		undoChances = 0;
+		//The player can make undo at most 3 times at his turn.
+		playerUndoChances = 3; 
 	}
 	
 	/**
@@ -90,6 +93,12 @@ public class BoardModel {
 	public void setTurn()
 	{
 		playerBTurn = !playerBTurn;
+		ChangeEvent event = new ChangeEvent(this);
+		
+		for (ChangeListener listener : listeners)
+			listener.stateChanged(event);
+		
+		playerUndoChances = 3;
 	}
 
 	public void printStones()
@@ -189,7 +198,7 @@ public class BoardModel {
 
 				// go through board A starting from chosen pit
 				goThroughBoardA(stonesLeft, pit);
-				setTurn(); 						//opponents turn
+				//setTurn(); 						//opponents turn
 				printStones();
 				System.out.println("Player B's turn now");
 				System.out.println("-------------------------------");
@@ -206,7 +215,7 @@ public class BoardModel {
 				boardB[pit - 1] = stonesEmpty;
 
 				goThroughBoardB(stonesLeft, pit);
-				setTurn(); // opponents turn
+				//setTurn(); // opponents turn
 				printStones();
 				System.out.println("Player A's turn now");
 				System.out.println("-------------------------------");
@@ -281,6 +290,30 @@ public class BoardModel {
 		return undoChances;
 	}
 	
+	public int getPlayerUndo()
+	{
+		return playerUndoChances;
+	}
+	
+	public boolean stackIsEmpty()
+	{
+		int size = stack.size();
+		if(size == 0)
+			return true; 
+		else
+			return false;
+	}
+	
+	
+	public void emptyStack()
+	{
+		while(undoChances > 0) 
+		{
+			stack.pop();
+			undoChances--;
+		}
+	}
+	
 	
 	/**
 	 * Undo the last move
@@ -289,7 +322,7 @@ public class BoardModel {
 	 */
 	public boolean undo()
 	{
-		if(undoChances > 0) 
+		if((undoChances > 0) && (playerUndoChances > 0))
 		{
 			String move = stack.pop();
 			undoChances--;
@@ -328,6 +361,8 @@ public class BoardModel {
 			numToAdd = 1;
 			stonesEmpty = 0;
 			
+			//player has one less chance to undo 
+			playerUndoChances--; 
 			return true;
 		}
 		
