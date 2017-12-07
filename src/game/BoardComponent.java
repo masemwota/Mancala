@@ -152,8 +152,12 @@ public class BoardComponent extends JComponent implements ChangeListener
         //pits panel
         //JPanel pitsPanel = new JPanel();
         pitsPanel = new JPanel();
-        pitsPanel.setLayout(new GridLayout(2, 6, 5, 5));
-
+        pitsPanel.setLayout(new GridLayout(4, 6, 5, 5));
+        //pits label B6-B1
+        for(int i = 6; i > 0; i--){
+            JLabel t = new JLabel("B"+i , SwingConstants.CENTER);
+            pitsPanel.add(t);
+        }
         //B6-B1 => Pit12-Pit7
         for (pitCounterB = 12; pitCounterB > 6; pitCounterB--)
         {
@@ -238,27 +242,33 @@ public class BoardComponent extends JComponent implements ChangeListener
             pitsPanel.add(label1);
 
         }
+        //pits Label A1-A6
+        for(int i = 1; i < 7; i++) {
+            JLabel t = new JLabel("A" + i, SwingConstants.CENTER);
+            pitsPanel.add(t);
+        }
+
         pitsPanel.setBackground(boardColor);
 
         //mancala B panel
         JPanel mancalaB = new JPanel();
-        mancalaB.setLayout(new BorderLayout());
+        mancalaB.setLayout(new GridBagLayout());
         JTextArea leftText = new JTextArea();
         leftText.setText("M\nA\nN\nC\nA\nL\nA\n\nB");
         leftText.setEditable(false);
-        mancalaB.add(leftText, BorderLayout.WEST);
-        JLabel manA = new JLabel(new Pits(13));
-        mancalaB.add(manA, BorderLayout.EAST);
+        mancalaB.add(leftText);
+        JLabel manB = new JLabel(new Pits(13));
+        mancalaB.add(manB);
 
         //mancala A panel
         JPanel mancalaA = new JPanel();
-        mancalaA.setLayout(new BorderLayout());
+        mancalaA.setLayout(new GridBagLayout());
         JTextArea rightText = new JTextArea();
         rightText.setText("M\nA\nN\nC\nA\nL\nA\n\nA");
         rightText.setEditable(false);
-        mancalaA.add(rightText, BorderLayout.EAST);
-        JLabel manB = new JLabel(new Pits(6));
-        mancalaA.add(manB, BorderLayout.WEST);
+        JLabel manA = new JLabel(new Pits(6));
+        mancalaA.add(manA);
+        mancalaA.add(rightText);
 
 
         //undo panel and player turn panel
@@ -349,7 +359,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                 if (pitsIndex == 6) {
                     for (int i = 0; i < boardModel.boardA[pitsIndex]; i++) {
                         //System.out.println(boardModel.boardA[pitsIndex]);
-                        Shape stones = b.formatStoneShape(boardModel.boardA[pitsIndex], i);
+                        Shape stones = b.formatMancalaStoneShape(boardModel.boardA[pitsIndex], i);
                         g2.setColor(b.formatStoneColor());
                         g2.draw(stones);
                         g2.fill(stones);
@@ -358,7 +368,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                 //Mancala B => boardB[ 13 - 7 = 6]
                 else {
                     for (int i = 0; i < boardModel.boardB[pitsIndex - 7]; i++) {
-                        Shape stones = b.formatStoneShape(boardModel.boardB[pitsIndex - 7], i);
+                        Shape stones = b.formatMancalaStoneShape(boardModel.boardB[pitsIndex - 7], i);
                         g2.setColor(b.formatStoneColor());
                         g2.draw(stones);
                         g2.fill(stones);
@@ -373,7 +383,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                 //A1-A6 => boardA[0]-boardA[5]
                 if (pitsIndex < 6) {
                     for (int i = 0; i < boardModel.boardA[pitsIndex]; i++) {
-                        Shape stones = b.formatStoneShape(boardModel.boardA[pitsIndex], i);
+                        Shape stones = b.formatPitStoneShape(boardModel.boardA[pitsIndex], i);
                         g2.setColor(b.formatStoneColor());
                         g2.draw(stones);
                         g2.fill(stones);
@@ -382,7 +392,7 @@ public class BoardComponent extends JComponent implements ChangeListener
                 //B6-B1 => boardB[12 - 7 = 5]-boardB[7 - 7 = 0]
                 else {
                     for (int i = 0; i < boardModel.boardB[pitsIndex - 7]; i++) {
-                        Shape stones = b.formatStoneShape(boardModel.boardB[pitsIndex - 7], i);
+                        Shape stones = b.formatPitStoneShape(boardModel.boardB[pitsIndex - 7], i);
                         g2.setColor(b.formatStoneColor());
                         g2.draw(stones);
                         g2.fill(stones);
