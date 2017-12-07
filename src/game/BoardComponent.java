@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
+ * Version Test
  * View Component of the game
  * @author Stan Yanakiev
  * @author Marietta Asemwota
