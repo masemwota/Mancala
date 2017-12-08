@@ -1,8 +1,6 @@
 package game;
-
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 
 /**
  * Style A of the game board
@@ -48,7 +46,7 @@ public class DesignB implements BoardFormatter {
         double x = (double)MAN_WIDTH / 2 - S_WIDTH / 2;
         double y = (double)MAN_HEIGHT / 2 - S_HEIGHT / 2;
         if (stoneIndex == 0){
-            return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+            return new Ellipse2D.Double(x, y, S_WIDTH, S_HEIGHT);
         }
         double degree = 360 / (stoneNum - 1) * stoneIndex;
         x += 30 * Math.sin(Math.toRadians(degree));
