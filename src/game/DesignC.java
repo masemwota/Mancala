@@ -6,10 +6,6 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Style A of the game board
  */
-
-/**
- * Style A of the game board
- */
 public class DesignC implements BoardFormatter {
     final static int MAN_HEIGHT = 200;
     final static int MAN_WIDTH = 100;
