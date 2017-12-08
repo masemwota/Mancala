@@ -259,9 +259,15 @@ public class BoardModel {
                 int counterB = 5 - i;
                 int temp = boardB[counterB]; // gets the stones out of the opposite pit
                 boardB[counterB] = 0; // reset to 0
-                boardA[6] = temp + 1; // puts those stones in the mancala plus the extra one
+                boardA[6] = boardA[6] + temp + 1; // puts those stones in the mancala plus the extra one
                 stonesLeft--;
             }
+            //            else if (stonesLeft ==1 && i == 6 && !playerBTurn)
+            //            {
+            //                boardA[i] = boardA[i] + numToAdd;
+            //                stonesLeft--;
+            //
+            //            }
             else if (stonesLeft > 0)
             {
                 if (i == 6 && playerBTurn) // if its Players B turn, skip the Player's A mancala
@@ -294,7 +300,7 @@ public class BoardModel {
                 int counterA = 5 - i;
                 int temp = boardA[counterA]; // gets the stones out of the opposite pit
                 boardA[counterA] = 0; // reset to 0
-                boardB[6] = temp + 1; // puts those stones in the mancala plus the extra one
+                boardB[6] = boardB[6] + temp + 1; // puts those stones in the mancala plus the extra one
                 stonesLeft--;
             }
             else if (stonesLeft > 0)
@@ -318,9 +324,9 @@ public class BoardModel {
      * Checks if Players A or Bs pits are empty
      * @return emptyPits true for one player
      */
-    public boolean isGameFinished()
+    public String isGameFinished()
     {
-        boolean emptyPits = false;
+        String  emptyPits = "";
         
         //Go through boardA
         for(int i = 0; i < boardA.length -1; i ++)
@@ -328,17 +334,18 @@ public class BoardModel {
             //Checks if pit i is empty
             if(boardA[i] == 0 )
             {
-                emptyPits = true;
+                emptyPits = "A";
+                
             }
             else
             {
-                emptyPits = false;
+                emptyPits = "N";
                 break;
             }
         }
         
         //If Player A Pits is not empty
-        if (!emptyPits)
+        if (emptyPits.equals("N"))
         {
             //Go through boardB
             for (int i = 0; i < boardB.length - 1; i++)
@@ -346,14 +353,34 @@ public class BoardModel {
                 //Checks if pit is empty
                 if (boardB[i] == 0)
                 {
-                    emptyPits = true;
+                    emptyPits = "B";
                 } else {
-                    emptyPits = false;
+                    emptyPits = "N";
                     break;
                 }
             }
         }
         
+        // Puts the remaining stones into the players mancala
+        int temp = 0;
+        if(emptyPits.equals("A"))
+        {
+            for(int i = 0; i < boardB.length -1; i ++)
+            {
+                temp += boardB[i];
+                boardB[i] = 0;
+            }
+            boardB[6] += temp;
+        }
+        else if(emptyPits.equals("B"))
+        {
+            for(int i = 0; i < boardA.length -1; i ++)
+            {
+                temp += boardA[i];
+                boardA[i] = 0;
+            }
+            boardA[6] += temp;
+        }
         return emptyPits;
     }
     
