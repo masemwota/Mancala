@@ -289,8 +289,8 @@ public class BoardComponent extends JComponent implements ChangeListener
                     boardModel.emptyStack();
                 }
                 
-                boolean finish = boardModel.isGameFinished();
-                if (finish)
+                String finish = boardModel.isGameFinished();
+                if (finish.equals("A") || finish.equals("B") )
                 {
                     if (boardModel.boardA[6] > boardModel.boardB[6])
                         JOptionPane.showMessageDialog(null, "Player A Wins!");
@@ -298,8 +298,8 @@ public class BoardComponent extends JComponent implements ChangeListener
                         JOptionPane.showMessageDialog(null, "Player B Wins!");
                     else
                         JOptionPane.showMessageDialog(null, "Tie!");
-                    
                 }
+                
                 
             }
         });
