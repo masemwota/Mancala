@@ -1,6 +1,9 @@
 package game;
-import javax.swing.event.*;
-import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 
 /**
  * This is model part of the program. It holds the board information

@@ -1,21 +1,20 @@
 package game;
-
 import java.awt.*;
 
+/**
+ * Game board formatter using Strategy pattern
+ * @author Marietta Asemwota
+ * @author Stan Yanakiev
+ * @author Yihua Li
+ */
 public interface BoardFormatter {
     Shape formatPitShape();
 
     Shape formatMancalaShape();
 
-    //Shape formatStoneShape(int stoneNum, int stoneIndex);
-
-    //Shape formatMancalaShape(int stoneNum, int stoneIndex);
-    
     Shape formatPitStoneShape(int stoneNum, int stoneIndex);
-    
-    Shape formatMancalaStoneShape(int stoneNum, int stoneIndex);
 
-    Shape formatMancalaShape(int stoneNum, int stoneIndex);
+    Shape formatMancalaStoneShape(int stoneNum, int stoneIndex);
 
     Color formatBoardColor();
 
@@ -30,5 +29,4 @@ public interface BoardFormatter {
     int formatPitHeight();
 
     int formatPitWdith();
-    
 }
