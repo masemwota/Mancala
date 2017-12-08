@@ -56,17 +56,24 @@ public class BoardComponent extends JComponent implements ChangeListener
 
     public void getDecisions()
     {
-        Object[] designs = {"Design B", "Design A"};
+        Object[] designs = {"Design C", "Design B", "Design A"};
         int selectDesign = JOptionPane.showOptionDialog(panel1, "Please choose a design", "Board Formatter",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, designs, designs[1]);
-        if(selectDesign == 1){
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, designs, designs[2]);
+        if(selectDesign == 2)
+        {
             b = new DesignA();
             drawBoard(b);
         }
-        else if(selectDesign == 0){
+        else if(selectDesign == 1){
             b = new DesignB();
             drawBoard(b);
-
+        }
+        else if(selectDesign == 0){
+            b = new DesignC();
+            drawBoard(b);
+        }
+        else{
+            System.exit(0);
         }
 
         Object[] stonesNum = {"4 stones", "3 stones"};
@@ -81,6 +88,9 @@ public class BoardComponent extends JComponent implements ChangeListener
             stones = 4;
             boardModel.setStones(stones);
             frame.repaint();
+        }
+        else{
+            System.exit(0);
         }
         frame.add(panel1);
         frame.pack();
@@ -200,6 +210,7 @@ public class BoardComponent extends JComponent implements ChangeListener
 
         //mancala B panel
         JPanel mancalaB = new JPanel();
+        mancalaB.setBackground(boardColor);
         mancalaB.setLayout(new GridBagLayout());
         JTextArea leftText = new JTextArea();
 
@@ -224,6 +235,7 @@ public class BoardComponent extends JComponent implements ChangeListener
 
         //mancala A panel
         JPanel mancalaA = new JPanel();
+        mancalaA.setBackground(boardColor);
         mancalaA.setLayout(new GridBagLayout());
         JTextArea rightText = new JTextArea();
         rightText.setText("M\nA\nN\nC\nA\nL\nA\n\nA");
@@ -231,7 +243,7 @@ public class BoardComponent extends JComponent implements ChangeListener
 
         manAStones = new JLabel(""+ boardModel.boardA[6], SwingConstants.CENTER);
         JLabel manA = new JLabel(new Pits(6));
-        leftText.setBackground(new Color(0,0,0,0));
+        rightText.setBackground(new Color(0,0,0,0));
         manBStones.setBackground(new Color(0, 0,0, 0));
         GridBagConstraints c1 = new GridBagConstraints();
         c1.fill = GridBagConstraints.HORIZONTAL;
@@ -248,13 +260,13 @@ public class BoardComponent extends JComponent implements ChangeListener
 
         //undo panel and player turn panel
         JPanel southPanel = new JPanel();
-        //JPanel undoPanel = new JPanel();
         undo = new JButton("undo (" + this.boardModel.getPlayerUndo() + ")");
         undo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Undo called");
                 boolean actionUndone = boardModel.undo();
+                boardModel.emptyStack();
                 if(!actionUndone)
                     JOptionPane.showMessageDialog(null, "There are no more undo chances. Mark move as done.");
             }
@@ -288,12 +300,18 @@ public class BoardComponent extends JComponent implements ChangeListener
                         String finish = boardModel.isGameFinished();
                         if (finish.equals("A") || finish.equals("B") )
                         {
-                            if (boardModel.boardA[6] > boardModel.boardB[6])
-                                JOptionPane.showMessageDialog(null, "Player A Wins!");
-                            else if (boardModel.boardB[6] > boardModel.boardA[6])
+                            if (boardModel.boardA[6] > boardModel.boardB[6]) {
+                            JOptionPane.showMessageDialog(null, "Player A Wins!");
+                            System.exit(0);
+                        }
+                            else if (boardModel.boardB[6] > boardModel.boardA[6]) {
                                 JOptionPane.showMessageDialog(null, "Player B Wins!");
-                            else
+                                System.exit(0);
+                            }
+                            else {
                                 JOptionPane.showMessageDialog(null, "Tie!");
+                                System.exit(0);
+                            }
                         }
                     }
                 });

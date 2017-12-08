@@ -435,11 +435,8 @@ public class BoardModel {
 
     public void emptyStack()
     {
-        while(undoChances > 0)
-        {
-            stack.pop();
-            undoChances--;
-        }
+        stack.clear();
+        undoChances = 0; 
     }
 
 
@@ -452,7 +449,7 @@ public class BoardModel {
     {
         if((undoChances > 0) && (playerUndoChances > 0))
         {
-        	String move = stack.pop();
+        		String move = stack.pop();
             undoChances--;
             
             String first = move.substring(0,1);
@@ -516,21 +513,23 @@ public class BoardModel {
         }
     }
     
+    /**
+     * To undo the special cases where stones are stolen 
+     * @param move
+     * @return
+     */
     public boolean undoSpecial(String move)
     {
-    		System.out.println("inside special undo");
-    		//undoing the special cases 
-    		//first character of substring tells whether it is a special case 
-    		
+    		//System.out.println("inside special undo");
+  
     		//undo the other move to return the non special stones 
     		//increment undo chances because they don't lose a chance just because it's special
     		undoChances++;
-    		//undoChances++;
     		undo(); 
-    		
+    	
     		//now undo the special case 
     		//Example: S A50 [1,2,3] A61 [4,5,6] B14 [7,8,9]
-    		System.out.println("special undo this: " + move);
+    		
     		String playerStr = move.substring(1,2); 
     		
     		String pitPlayerStr = move.substring(2,3); 
@@ -557,8 +556,6 @@ public class BoardModel {
     			boardA[6] = mancalaPlayer; 
     			//restore opponent's pit 
     			boardB[pitOpponent] = stonesOpponent;
-    			System.out.println("undid move for player A");
-    			
     		}
     		
     		else
@@ -570,12 +567,8 @@ public class BoardModel {
     			boardB[6] = mancalaPlayer; 
     			//restore opponent's pit 
     			boardA[pitOpponent] = stonesOpponent;
-    			System.out.println("undid move for player B");
-    		
     		}
-    		//undoChances++;
-    		emptyStack();
-    		System.out.println("Empty stack: " + stackIsEmpty());
+  
     		update();
     		return true;
     }
