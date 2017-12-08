@@ -27,9 +27,23 @@ public class DesignA implements BoardFormatter {
     }
 
     @Override
-    public Shape formatStoneShape(int stoneNum, int stoneIndex) {
+    public Shape formatPitStoneShape(int stoneNum, int stoneIndex) {
         double x = (double)PIT_WIDTH / 2 - S_WIDTH / 2;
         double y = (double)PIT_HEIGHT / 2 - S_HEIGHT / 2;
+        if (stoneIndex == 0){
+            return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+        }
+        double degree = 360 / (stoneNum - 1) * stoneIndex;
+        x += 30 * Math.sin(Math.toRadians(degree));
+        y += 30 * Math.cos(Math.toRadians(degree));
+
+        return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+    }
+
+    @Override
+    public Shape formatMancalaStoneShape(int stoneNum, int stoneIndex){
+        double x = (double)MAN_WIDTH / 2 - S_WIDTH / 2;
+        double y = (double)MAN_HEIGHT / 2 - S_HEIGHT / 2;
         if (stoneIndex == 0){
             return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
         }
@@ -74,4 +88,5 @@ public class DesignA implements BoardFormatter {
     public int formatPitWdith() {
         return PIT_WIDTH;
     }
+
 }

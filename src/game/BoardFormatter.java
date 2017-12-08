@@ -7,7 +7,13 @@ public interface BoardFormatter {
 
     Shape formatMancalaShape();
 
-    Shape formatStoneShape(int stoneNum, int stoneIndex);
+    //Shape formatStoneShape(int stoneNum, int stoneIndex);
+
+    //Shape formatMancalaShape(int stoneNum, int stoneIndex);
+    
+    Shape formatPitStoneShape(int stoneNum, int stoneIndex);
+    
+    Shape formatMancalaStoneShape(int stoneNum, int stoneIndex);
 
     Color formatBoardColor();
 
@@ -22,4 +28,5 @@ public interface BoardFormatter {
     int formatPitHeight();
 
     int formatPitWdith();
+    
 }
