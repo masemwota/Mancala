@@ -18,136 +18,139 @@ import java.awt.event.MouseEvent;
 public class BoardComponent extends JComponent implements ChangeListener
 {
     BoardModel boardModel;
-    
+
     private boolean designChosen;
     private boolean stonesChosen;
     private int design, stones;
     private BoardFormatter b;
     private JFrame frame;
     private JButton undo;
-    
+
     //we are going to use panels like screens and switch back and forth
     private JPanel panel;
     private JPanel panel1;
     private JPanel pitsPanel;
     private int pitCounterA;
     private int pitCounterB;
-    
+
     private JTextArea playerText;
-    
-    
-    
-    
+
+    private JLabel manAStones;
+    private JLabel manBStones;
+
+
+
+
     public BoardComponent(BoardModel m)
     {
         frame = new JFrame();
         boardModel = m;
-        
+
         frame.setLayout(new BorderLayout());
-        
+
         panel = new JPanel();
         panel1 = new JPanel();
-        
+
         designChosen = false;
         stonesChosen = false;
-        
+
         design = 0;
         stones = 0;
-        
+
         getDecisions();
     }
-    
-    
-    
+
+
+
     public void getDecisions()
     {
         JTextField textField = new JTextField(40);
         textField.setEditable(false);
         textField.setText("Please Choose A Design");
-        
+
         JButton button1 = new JButton("Design1");
         JButton button2 = new JButton("Design2");
-        
+
         button1.addActionListener(
-                                  new ActionListener()
-                                  {
-            public void actionPerformed(ActionEvent e)
-            {
-                textField.setText("How many stones do you want in each pit (3 or 4)");
-                
-                if(designChosen == false)
+                new ActionListener()
                 {
-                    button1.setText("3 Stones");
-                    button2.setText("4 Stones");
-                    designChosen = true;
-                    design = 1;
-                    b = new DesignA();
-                }
-                else //design already chosen -- choose stones
-                {
-                    stones = 3;
-                    
-                    drawBoard(b);
-                    
-                    frame.remove(panel);
-                    frame.setContentPane(panel1);
-                    frame.repaint();
-                    getInfo();
-                }
-            }
-            
-        });
-        
-        
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        textField.setText("How many stones do you want in each pit (3 or 4)");
+
+                        if(designChosen == false)
+                        {
+                            button1.setText("3 Stones");
+                            button2.setText("4 Stones");
+                            designChosen = true;
+                            design = 1;
+                            b = new DesignA();
+                        }
+                        else //design already chosen -- choose stones
+                        {
+                            stones = 3;
+
+                            drawBoard(b);
+
+                            frame.remove(panel);
+                            frame.setContentPane(panel1);
+                            frame.repaint();
+                            getInfo();
+                        }
+                    }
+
+                });
+
+
         button2.addActionListener(
-                                  new ActionListener()
-                                  {
-            public void actionPerformed(ActionEvent e)
-            {
-                textField.setText("How many stones do you want in each pit (3 or 4)");
-                //if(!button2.getText().equals("4 Stones"))
-                if(designChosen == false)
+                new ActionListener()
                 {
-                    button2.setText("4 Stones");
-                    button1.setText("3 Stones");
-                    
-                    designChosen = true;
-                    design = 2;
-                    b = new DesignB();
-                }
-                else
-                {
-                    stonesChosen = true;
-                    stones = 4;
-                    
-                    //b = new DesignB();//should be design B
-                    drawBoard(b);
-                    
-                    frame.remove(panel);
-                    frame.setContentPane(panel1);
-                    frame.repaint();
-                    getInfo();
-                }
-            }
-        });
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        textField.setText("How many stones do you want in each pit (3 or 4)");
+                        //if(!button2.getText().equals("4 Stones"))
+                        if(designChosen == false)
+                        {
+                            button2.setText("4 Stones");
+                            button1.setText("3 Stones");
+
+                            designChosen = true;
+                            design = 2;
+                            b = new DesignB();
+                        }
+                        else
+                        {
+                            stonesChosen = true;
+                            stones = 4;
+
+                            //b = new DesignB();//should be design B
+                            drawBoard(b);
+
+                            frame.remove(panel);
+                            frame.setContentPane(panel1);
+                            frame.repaint();
+                            getInfo();
+                        }
+                    }
+                });
         panel.add(button1);
         panel.add(button2);
-        
+
         frame.add(textField, BorderLayout.NORTH);
         frame.add(panel, BorderLayout.CENTER);
-        
+
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
+
     public void drawBoard(BoardFormatter b)
     {
         System.out.println("Board Drawn");
         Color boardColor = b.formatBoardColor();
         panel1.setLayout(new BorderLayout());
-        
-        
+
+
         //pits panel
         //JPanel pitsPanel = new JPanel();
         pitsPanel = new JPanel();
@@ -165,7 +168,7 @@ public class BoardComponent extends JComponent implements ChangeListener
             Pits pitCount = new Pits(pitCounterB);
             JLabel label = new JLabel(pitCount);
             label.addMouseListener(new MouseAdapter()
-                                   {
+            {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //if a move is already made
@@ -180,14 +183,14 @@ public class BoardComponent extends JComponent implements ChangeListener
                         {
                             JOptionPane.showMessageDialog(null, "Can not pick an empty pit. Try Again");
                         }
-                        
+
                         else
                         {
                             System.out.println("Player B Move Read");
                             boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1);
                         }
                     }
-                    
+
                     else
                     {
                         JOptionPane.showMessageDialog(null, "A move has already been made. Either undo it or mark it as done");
@@ -196,7 +199,7 @@ public class BoardComponent extends JComponent implements ChangeListener
             });
             pitsPanel.add(label);
         }
-        
+
         // change 2
         // A1-A6 => Pit0-Pit5
         for (pitCounterA = 0; pitCounterA < 6; pitCounterA++)
@@ -206,14 +209,14 @@ public class BoardComponent extends JComponent implements ChangeListener
             // JButton button1 = new JButton();
             // System.out.println("Outside of clicked: " + pitCounterA);
             label1.addMouseListener(new MouseAdapter()
-                                    {
+            {
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
                     System.out.println("Undo chances: " + boardModel.stackIsEmpty());
                     if(boardModel.stackIsEmpty())
                     {
-                        
+
                         if (boardModel.playerBTurn)
                         {
                             JOptionPane.showMessageDialog(null, "This pit doesn't belong to you");
@@ -226,12 +229,12 @@ public class BoardComponent extends JComponent implements ChangeListener
                         else
                         {
                             System.out.println("Player A Move Read");
-                            
+
                             boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
                             // System.out.println("Inside of clicked: " + pitCount.pitsIndex);
                         }
                     }
-                    
+
                     else
                     {
                         JOptionPane.showMessageDialog(null, "A move has already been made. Either undo it or mark it as done");
@@ -241,7 +244,7 @@ public class BoardComponent extends JComponent implements ChangeListener
             //label1.add(button1);
             //pitsPanel.add(button1);
             pitsPanel.add(label1);
-            
+
         }
         //pits Label A1-A6
         for(int i = 1; i < 7; i++) {
@@ -250,17 +253,29 @@ public class BoardComponent extends JComponent implements ChangeListener
         }
 
         pitsPanel.setBackground(boardColor);
-        
+
         //mancala B panel
         JPanel mancalaB = new JPanel();
         mancalaB.setLayout(new GridBagLayout());
         JTextArea leftText = new JTextArea();
+
+        manBStones = new JLabel(""+ boardModel.boardB[6], SwingConstants.CENTER);
+
         leftText.setText("M\nA\nN\nC\nA\nL\nA\n\nB");
         leftText.setEditable(false);
-
-        mancalaB.add(leftText);
         JLabel manB = new JLabel(new Pits(13));
-        mancalaB.add(manB);
+
+        leftText.setBackground(new Color(0,0,0,0));
+        manBStones.setBackground(new Color(0, 0,0, 0));
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        mancalaB.add(leftText, c);
+        c.gridx = 1;
+        mancalaB.add(manB, c);
+        c.gridy = 1;
+        mancalaB.add(manBStones, c);
 
 
         //mancala A panel
@@ -270,16 +285,27 @@ public class BoardComponent extends JComponent implements ChangeListener
         rightText.setText("M\nA\nN\nC\nA\nL\nA\n\nA");
         rightText.setEditable(false);
 
+        manAStones = new JLabel(""+ boardModel.boardA[6], SwingConstants.CENTER);
         JLabel manA = new JLabel(new Pits(6));
-        mancalaA.add(manA);
-        mancalaA.add(rightText);
+        leftText.setBackground(new Color(0,0,0,0));
+        manBStones.setBackground(new Color(0, 0,0, 0));
+        GridBagConstraints c1 = new GridBagConstraints();
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = 0;
+        mancalaA.add(manA, c1);
+        c1.gridx = 1;
+        mancalaA.add(rightText, c1);
+        c1.gridx = 0;
+        c1.gridy = 1;
+        mancalaA.add(manAStones, c1);
 
 
 
         //undo panel and player turn panel
         JPanel southPanel = new JPanel();
         //JPanel undoPanel = new JPanel();
-        undo = new JButton("undo" /* + this.boardModel.getUndo() */);
+        undo = new JButton("undo (" + this.boardModel.getPlayerUndo() + ")");
         undo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -289,55 +315,65 @@ public class BoardComponent extends JComponent implements ChangeListener
                     JOptionPane.showMessageDialog(null, "There are no more undo chances. Mark move as done.");
             }
         });
-        
+
         //timer
         JButton moveDone = new JButton("Move done");
         moveDone.addActionListener(
-                                   new ActionListener()
-                                   {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (boardModel.stack.isEmpty())
-                    JOptionPane.showMessageDialog(null, "Make a move first");
-                else {
-                    System.out.println("Move is done");
-                    boardModel.setTurn();
-                    boardModel.emptyStack();
-                }
-                
-                String finish = boardModel.isGameFinished();
-                if (finish.equals("A") || finish.equals("B") )
+                new ActionListener()
                 {
-                    if (boardModel.boardA[6] > boardModel.boardB[6])
-                        JOptionPane.showMessageDialog(null, "Player A Wins!");
-                    else if (boardModel.boardB[6] > boardModel.boardA[6])
-                        JOptionPane.showMessageDialog(null, "Player B Wins!");
-                    else
-                        JOptionPane.showMessageDialog(null, "Tie!");
-                }
-                
-                
-            }
-        });
-        
-        
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        if (boardModel.stack.isEmpty())
+                            JOptionPane.showMessageDialog(panel1, "Make a move first");
+                        else {
+                            if(boardModel.freeTurn && (!boardModel.isGameFinished().equals("A") || !boardModel.isGameFinished().equals("B"))){
+                                //skip opponent's turn once
+                                boardModel.setTurn();
+                                boardModel.setTurn();
+                                boardModel.emptyStack();
+                                JOptionPane.showMessageDialog(panel1, "You got a free turn!");
+                                boardModel.freeTurn = false;
+                            }
+                            else {
+                                System.out.println("Move is done");
+                                boardModel.setTurn();
+                                boardModel.emptyStack();
+                            }
+                        }
+
+                        String finish = boardModel.isGameFinished();
+                        if (finish.equals("A") || finish.equals("B") )
+                        {
+                            if (boardModel.boardA[6] > boardModel.boardB[6])
+                                JOptionPane.showMessageDialog(null, "Player A Wins!");
+                            else if (boardModel.boardB[6] > boardModel.boardA[6])
+                                JOptionPane.showMessageDialog(null, "Player B Wins!");
+                            else
+                                JOptionPane.showMessageDialog(null, "Tie!");
+                        }
+
+
+                    }
+                });
+
+
         southPanel.add(undo);//end undo panel
         southPanel.add(moveDone);
-        
-        
+
+
         //JPanel playerTurn = new JPanel();
         playerText = new JTextArea();
         playerText.setEditable(false);
-        
+
         if(boardModel.playerBTurn)
             playerText.setText("Player B Turn");
-        
+
         else
             playerText.setText("Player A Turn");
-        
+
         southPanel.add(playerText);
-        
-        
+
+
         panel1.add(mancalaA, BorderLayout.EAST);
         panel1.add(pitsPanel, BorderLayout.CENTER);
         panel1.add(mancalaB, BorderLayout.WEST);
@@ -346,9 +382,9 @@ public class BoardComponent extends JComponent implements ChangeListener
         frame.add(panel1);
         frame.pack();
         frame.setVisible(true);
-        
+
     }
-    
+
     /**
      *  The pits and mancala that implemented as icons
      */
@@ -358,17 +394,17 @@ public class BoardComponent extends JComponent implements ChangeListener
         public Pits(int pitsIndex) {
             this.pitsIndex = pitsIndex;
         }
-        
-        
+
+
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D)g;
-            
+
             if(pitsIndex == 6 || pitsIndex == 13){
                 mancala = b.formatMancalaShape();
                 g2.setColor(b.formatPitColor());
                 g2.fill(mancala);
-                
+
                 //Mancala A => boardA[6]
                 if (pitsIndex == 6) {
                     for (int i = 0; i < boardModel.boardA[pitsIndex]; i++) {
@@ -414,12 +450,12 @@ public class BoardComponent extends JComponent implements ChangeListener
                 }
             }
         }
-        
+
         @Override
         public int getIconWidth() {
             return 100;
         }
-        
+
         @Override
         public int getIconHeight() {
             if (pitsIndex == 6 || pitsIndex == 13){
@@ -428,10 +464,10 @@ public class BoardComponent extends JComponent implements ChangeListener
             else
                 return 100;
         }
-        
+
     }
-    
-    
+
+
     public void getInfo()
     {
         System.out.println("Design " + design +" chosen");
@@ -439,17 +475,21 @@ public class BoardComponent extends JComponent implements ChangeListener
         System.out.println("-------------------------------");
         boardModel.setStones(stones);
     }
-    
+
     @Override
     public void stateChanged(ChangeEvent e)
     {
-        panel1.repaint();
-        
+        manAStones.setText("" + boardModel.boardA[6]);
+        manBStones.setText("" + boardModel.boardB[6]);
+        undo.setText("undo (" + boardModel.getPlayerUndo() + ")");
+        frame.repaint();
+//        panel1.repaint();
+
         if(boardModel.playerBTurn)
             playerText.setText("Player B Turn");
-        
+
         else
             playerText.setText("Player A Turn");
-        
+
     }
 }
