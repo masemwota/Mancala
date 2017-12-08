@@ -1,5 +1,4 @@
 package game;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -19,15 +18,12 @@ public class BoardComponent extends JComponent implements ChangeListener
 {
     BoardModel boardModel;
 
-    private boolean designChosen;
-    private boolean stonesChosen;
     private int design, stones;
     private BoardFormatter b;
     private JFrame frame;
     private JButton undo;
 
     //we are going to use panels like screens and switch back and forth
-    private JPanel panel;
     private JPanel panel1;
     private JPanel pitsPanel;
     private int pitCounterA;
@@ -48,11 +44,7 @@ public class BoardComponent extends JComponent implements ChangeListener
 
         frame.setLayout(new BorderLayout());
 
-        panel = new JPanel();
         panel1 = new JPanel();
-
-        designChosen = false;
-        stonesChosen = false;
 
         design = 0;
         stones = 0;
@@ -64,81 +56,33 @@ public class BoardComponent extends JComponent implements ChangeListener
 
     public void getDecisions()
     {
-        JTextField textField = new JTextField(40);
-        textField.setEditable(false);
-        textField.setText("Please Choose A Design");
+        Object[] designs = {"Design B", "Design A"};
+        int selectDesign = JOptionPane.showOptionDialog(panel1, "Please choose a design", "Board Formatter",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, designs, designs[1]);
+        if(selectDesign == 1){
+            b = new DesignA();
+            drawBoard(b);
+        }
+        else if(selectDesign == 0){
+            b = new DesignB();
+            drawBoard(b);
 
-        JButton button1 = new JButton("Design1");
-        JButton button2 = new JButton("Design2");
+        }
 
-        button1.addActionListener(
-                new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        textField.setText("How many stones do you want in each pit (3 or 4)");
-
-                        if(designChosen == false)
-                        {
-                            button1.setText("3 Stones");
-                            button2.setText("4 Stones");
-                            designChosen = true;
-                            design = 1;
-                            b = new DesignA();
-                        }
-                        else //design already chosen -- choose stones
-                        {
-                            stones = 3;
-
-                            drawBoard(b);
-
-                            frame.remove(panel);
-                            frame.setContentPane(panel1);
-                            frame.repaint();
-                            getInfo();
-                        }
-                    }
-
-                });
-
-
-        button2.addActionListener(
-                new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        textField.setText("How many stones do you want in each pit (3 or 4)");
-                        //if(!button2.getText().equals("4 Stones"))
-                        if(designChosen == false)
-                        {
-                            button2.setText("4 Stones");
-                            button1.setText("3 Stones");
-
-                            designChosen = true;
-                            design = 2;
-                            b = new DesignB();
-                        }
-                        else
-                        {
-                            stonesChosen = true;
-                            stones = 4;
-
-                            //b = new DesignB();//should be design B
-                            drawBoard(b);
-
-                            frame.remove(panel);
-                            frame.setContentPane(panel1);
-                            frame.repaint();
-                            getInfo();
-                        }
-                    }
-                });
-        panel.add(button1);
-        panel.add(button2);
-
-        frame.add(textField, BorderLayout.NORTH);
-        frame.add(panel, BorderLayout.CENTER);
-
+        Object[] stonesNum = {"4 stones", "3 stones"};
+        int selectStone = JOptionPane.showOptionDialog(panel1, "How many stones do you want in each pit", "Board Formatter",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, stonesNum, stonesNum[1]);
+        if(selectStone == 1){
+            stones = 3;
+            boardModel.setStones(stones);
+            frame.repaint();
+        }
+        else if(selectStone == 0){
+            stones = 4;
+            boardModel.setStones(stones);
+            frame.repaint();
+        }
+        frame.add(panel1);
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -351,8 +295,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                             else
                                 JOptionPane.showMessageDialog(null, "Tie!");
                         }
-                       
-
                     }
                 });
 

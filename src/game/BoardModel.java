@@ -1,6 +1,9 @@
 package game;
-import javax.swing.event.*;
-import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 
 /**
  * This is model part of the program. It holds the board information
@@ -177,7 +180,7 @@ public class BoardModel {
      */
     public void placeStones(boolean playerBTurn, int pit)
     {
-    		if (pit == 7)
+    	if (pit == 7)
         {
             System.out.println("Can Not Choose The Mancala");
         }
@@ -194,7 +197,7 @@ public class BoardModel {
                 move += "A";
                 move += pit;
                 move += stonesLeft;
-                
+
                 stack.push(move);
 
                 boardA[pit - 1] = stonesEmpty;     // all stones are taken from the chosen pit
@@ -214,7 +217,7 @@ public class BoardModel {
                 move += "B";
                 move += pit;
                 move += stonesLeft;
-                
+  
                 stack.push(move);
 
                 boardB[pit - 1] = stonesEmpty;
@@ -227,6 +230,7 @@ public class BoardModel {
             }
 
             update();
+
             //stack.push(move);
             undoChances++;
 
@@ -271,7 +275,7 @@ public class BoardModel {
                 
                 stack.push(move);
             }
-          
+
             else if (stonesLeft > 0)
             {
                 if (i == 6 && playerBTurn) // if its Players B turn, skip the Player's A mancala
@@ -448,16 +452,8 @@ public class BoardModel {
     {
         if((undoChances > 0) && (playerUndoChances > 0))
         {
-        		String move = stack.pop();
+        	String move = stack.pop();
             undoChances--;
-            
-//            String first = null; 
-//            
-//            if(!stackIsEmpty())
-//            {
-//            		String secondMove = stack.pop(); 
-//            		first = secondMove.substring(0, 1);
-//            }
             
             String first = move.substring(0,1);
             
@@ -466,10 +462,10 @@ public class BoardModel {
             		//special case
             		return undoSpecial(move);
             }
-            
+
             else 
             {
-            		String player = move.substring(0,1);
+            	String player = move.substring(0,1);
                 String pitStr = move.substring(1, 2);
                 String stonesStr = move.substring(2);
 
@@ -518,7 +514,6 @@ public class BoardModel {
             update();
             return false;
         }
-
     }
     
     public boolean undoSpecial(String move)
@@ -588,7 +583,6 @@ public class BoardModel {
     public void setBoardA(int[] boardA) {
         this.boardA = boardA;
     }
-
     public void setBoardB(int[] boardB) {
         this.boardB = boardB;
     }

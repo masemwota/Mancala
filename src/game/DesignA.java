@@ -1,5 +1,4 @@
 package game;
-
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -88,5 +87,4 @@ public class DesignA implements BoardFormatter {
     public int formatPitWdith() {
         return PIT_WIDTH;
     }
-
 }
