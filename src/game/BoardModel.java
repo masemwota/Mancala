@@ -1,4 +1,3 @@
-package game;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.ArrayDeque;

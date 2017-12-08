@@ -1,11 +1,15 @@
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * Style A of the game board
  */
-public class DesignA implements BoardFormatter {
+
+/**
+ * Style A of the game board
+ */
+public class DesignC implements BoardFormatter {
     final static int MAN_HEIGHT = 200;
     final static int MAN_WIDTH = 100;
     final static int PIT_HEIGHT = 100;
@@ -21,7 +25,7 @@ public class DesignA implements BoardFormatter {
 
     @Override
     public Shape formatMancalaShape() {
-        return new Ellipse2D.Double(0,0,MAN_WIDTH,MAN_HEIGHT);
+        return new RoundRectangle2D.Double(0,0,MAN_WIDTH,MAN_HEIGHT, 20, 20);
     }
 
     @Override
@@ -29,13 +33,13 @@ public class DesignA implements BoardFormatter {
         double x = (double)PIT_WIDTH / 2 - S_WIDTH / 2;
         double y = (double)PIT_HEIGHT / 2 - S_HEIGHT / 2;
         if (stoneIndex == 0){
-            return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+            return new RoundRectangle2D.Double(x, y, S_WIDTH, S_HEIGHT, 20, 20);
         }
         double degree = 360 / (stoneNum - 1) * stoneIndex;
         x += 30 * Math.sin(Math.toRadians(degree));
         y += 30 * Math.cos(Math.toRadians(degree));
 
-        return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+        return new RoundRectangle2D.Double(x, y, S_WIDTH, S_HEIGHT, 20, 20);
     }
 
     @Override
@@ -43,28 +47,28 @@ public class DesignA implements BoardFormatter {
         double x = (double)MAN_WIDTH / 2 - S_WIDTH / 2;
         double y = (double)MAN_HEIGHT / 2 - S_HEIGHT / 2;
         if (stoneIndex == 0){
-            return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+            return new RoundRectangle2D.Double(x, y, S_WIDTH, S_HEIGHT, 20, 20);
         }
         double degree = 360 / (stoneNum - 1) * stoneIndex;
         x += 30 * Math.sin(Math.toRadians(degree));
         y += 30 * Math.cos(Math.toRadians(degree));
 
-        return new Rectangle2D.Double(x, y, S_WIDTH, S_HEIGHT);
+        return new RoundRectangle2D.Double(x, y, S_WIDTH, S_HEIGHT, 20, 20);
     }
 
     @Override
     public Color formatBoardColor() {
-        return Color.LIGHT_GRAY;
+        return Color.WHITE;
     }
 
     @Override
     public Color formatPitColor() {
-        return Color.ORANGE;
+        return Color.LIGHT_GRAY;
     }
 
     @Override
     public Color formatStoneColor() {
-        return Color.GRAY;
+        return Color.BLACK;
     }
 
     @Override
@@ -86,4 +90,6 @@ public class DesignA implements BoardFormatter {
     public int formatPitWdith() {
         return PIT_WIDTH;
     }
+
+
 }
