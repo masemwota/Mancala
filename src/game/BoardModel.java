@@ -289,7 +289,6 @@ public class BoardModel {
         //if pit == 0 --> start over
         for (int i = pit; i < boardB.length; i++)
         {
-        		//theivery
             if (stonesLeft == 1 && boardB[i] == 0 && i != 6 && playerBTurn)
             {
                 int counterA = 5 - i;
