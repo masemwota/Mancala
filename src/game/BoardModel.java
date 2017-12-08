@@ -10,47 +10,42 @@ import java.util.*;
  * @author Yihua Li
  * @date 10/30/2017
  */
-/**
- * This is model part of the program. It holds the board information
- *
- * @author Marietta Asemwota
- * @author Stan Yanakiev
- * @author Yihua Li
- * @date 10/30/2017
- */
 public class BoardModel {
     int[] boardA;
     int[] boardB;
+    int[] tempA;
+    int[] tempB;
     int defaultStones;
+    boolean freeTurn = false;//helper variable for freeTurn
     boolean playerBTurn; // false = Player A, true = player B
     int numToAdd; //number to add to each pit -- standard is 1
     int stonesEmpty; //stones left in the pit after taken from -- standard is 0
-    
+
     private ArrayList<ChangeListener> listeners;
     private ArrayList<String> moves; //list of moves to help with undo
     Deque<String> stack;
     private int undoChances;
     private int playerUndoChances;
-    
+
     public BoardModel()
     {
         boardA = new int[7];
         boardB = new int[7];
         defaultStones = 0;
         stonesEmpty = 0;
-        
+
         // Player A always starts first
         playerBTurn = false;
-        
+
         numToAdd = 1;
         listeners = new ArrayList<ChangeListener>();
-        
+
         stack = new ArrayDeque<String>();
         undoChances = 0;
         //The player can make undo at most 3 times at his turn.
         playerUndoChances = 3;
     }
-    
+
     /**
      * Set the number of stones in each pit based on user input
      * @param stones - the number of stones
@@ -58,7 +53,7 @@ public class BoardModel {
     public void setStones(int stones)
     {
         defaultStones = stones;
-        
+
         //PLAYER A
         for (int i = 0; i < boardA.length; i++)
         {
@@ -66,7 +61,7 @@ public class BoardModel {
             if (i == 6) //if mancala for player A
                 boardA[6] = 0;
         }
-        
+
         //PLAYER B
         for (int i = 0; i < boardB.length; i++)
         {
@@ -74,12 +69,12 @@ public class BoardModel {
             if (i == 6) //if mancala for player B
                 boardB[6] = 0;
         }
-        
+
         System.out.println("Starting Board: ");
         printStones();
         System.out.println("-------------------------------");
     }
-    
+
     /**
      * Get the board for player A
      * @return array of ints
@@ -88,7 +83,7 @@ public class BoardModel {
     {
         return boardA;
     }
-    
+
     /**
      * Get the board for player B
      * @return array of ints
@@ -97,18 +92,22 @@ public class BoardModel {
     {
         return boardB;
     }
-    
+
     public void setTurn()
     {
         playerBTurn = !playerBTurn;
-        ChangeEvent event = new ChangeEvent(this);
-        
-        for (ChangeListener listener : listeners)
-            listener.stateChanged(event);
-        
+        //can delete, moved to method 'update'
+//        ChangeEvent event = new ChangeEvent(this);
+//        for (ChangeListener listener : listeners)
+//            listener.stateChanged(event);
+        update();
         playerUndoChances = 3;
     }
-    
+
+    /**
+     * Print the current state of the board in console
+     * Only for development testing
+     */
     public void printStones()
     {
         // PLAYER B (prints it backwards)
@@ -123,7 +122,7 @@ public class BoardModel {
         }
         System.out.print("         <--- Player B");
         System.out.println(" ");
-        
+
         //PLAYER A
         System.out.print("    ");
         for (int i = 0; i < boardA.length; i++)
@@ -138,8 +137,8 @@ public class BoardModel {
         System.out.print("     <--- Player A");
         System.out.println("\n ");
     }
-    
-    
+
+
     /**
      * Given the board and a pit, check if the pit is empty
      * @param playerBTurn - the board to check through
@@ -155,7 +154,7 @@ public class BoardModel {
                 return true;
             }
         }
-        
+
         else //player B turn
         {
             if (boardB[pit - 1] == 0)
@@ -163,11 +162,11 @@ public class BoardModel {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    
+
+
     /**
      * Place stones from one pit to the others
      *
@@ -178,32 +177,28 @@ public class BoardModel {
      */
     public void placeStones(boolean playerBTurn, int pit)
     {
-        // when stones are moved, notify the change listener
-        // Notify all observers of the change to the invoice
-        ChangeEvent event = new ChangeEvent(this);
-        for (ChangeListener listener : listeners)
-            listener.stateChanged(event);
-        
-        if (pit == 7)
+    		if (pit == 7)
         {
             System.out.println("Can Not Choose The Mancala");
         }
         else
         {
             int stonesLeft;
-            
+
             String move = ""; //to keep track of this move
-            
+
             if (!playerBTurn) // Player A's turn
             {
                 stonesLeft = boardA[pit - 1];     // how many stones to move
-                
+
                 move += "A";
                 move += pit;
                 move += stonesLeft;
                 
+                stack.push(move);
+
                 boardA[pit - 1] = stonesEmpty;     // all stones are taken from the chosen pit
-                
+
                 // go through board A starting from chosen pit
                 goThroughBoardA(stonesLeft, pit);
                 //setTurn();                         //opponents turn
@@ -211,31 +206,34 @@ public class BoardModel {
                 System.out.println("Player B's turn now");
                 System.out.println("-------------------------------");
             }
-            
+
             else // Player B's turn
             {
                 stonesLeft = boardB[pit - 1];
-                
+
                 move += "B";
                 move += pit;
                 move += stonesLeft;
                 
+                stack.push(move);
+
                 boardB[pit - 1] = stonesEmpty;
-                
+
                 goThroughBoardB(stonesLeft, pit);
                 //setTurn(); // opponents turn
                 printStones();
                 System.out.println("Player A's turn now");
                 System.out.println("-------------------------------");
             }
-            
-            stack.push(move);
+
+            update();
+            //stack.push(move);
             undoChances++;
-            
-            
+
+
         }
     }
-    
+
     /**
      * Go through and place stones on Player A's side
      *
@@ -248,37 +246,54 @@ public class BoardModel {
     {
         //to make this able to traverse the board and subtract stones, be able to change numberToAdd
         //numToAdd = 1;
-        
+
+
         //if pit == 0 -> start over
         for (int i = pit; i < boardA.length; i++)
         {
             // If it is our last stone to place and the pit has no stones,
             // steal the opponents stones in the opposite pit
-            if (stonesLeft == 1 && boardA[i] == 0 && i != 6 && !playerBTurn)
+            if (stonesLeft == 1 && boardA[i] == 0 && i != 6 && !playerBTurn && boardB[5-i] != 0)
             {
-                int counterB = 5 - i;
-                int temp = boardB[counterB]; // gets the stones out of the opposite pit
+            		int counterB = 5 - i; 
+            		int temp = boardB[counterB]; // gets the stones out of the opposite pit
+                 
+                //save the board -- special case 
+                String move = "S"; 
+                move += "A" + i + 0; //original is 0
+                move += "A" + 6 + boardA[6]; //mancala for A 
+                move += "B" + counterB + temp; //original for B pit 
+                
+               
                 boardB[counterB] = 0; // reset to 0
-                boardA[6] = temp + 1; // puts those stones in the mancala plus the extra one
+                boardA[6] = boardA[6] + temp + 1; // puts those stones in the mancala plus the extra one
                 stonesLeft--;
+                
+                stack.push(move);
             }
+          
             else if (stonesLeft > 0)
             {
                 if (i == 6 && playerBTurn) // if its Players B turn, skip the Player's A mancala
                 {
                     continue;
                 }
+                //if the last stone is placed into your own mancala, you got a free turn
+                if (i == 6 && stonesLeft == 1)
+                {
+                    freeTurn = true;
+                }
                 boardA[i] = boardA[i] + numToAdd;
                 stonesLeft--;
             }
         }
-        
+
         if(stonesLeft > 0) // still stones left? go to boardB
         {
             goThroughBoardB(stonesLeft, 0);
         }
     }
-    
+
     /**
      * Go through and place stones on Player B's side
      * @param stonesLeft - the stones left to distribute
@@ -289,19 +304,34 @@ public class BoardModel {
         //if pit == 0 --> start over
         for (int i = pit; i < boardB.length; i++)
         {
-            if (stonesLeft == 1 && boardB[i] == 0 && i != 6 && playerBTurn)
+            if (stonesLeft == 1 && boardB[i] == 0 && i != 6 && playerBTurn && boardA[5 - i]!=0)
             {
                 int counterA = 5 - i;
                 int temp = boardA[counterA]; // gets the stones out of the opposite pit
+                
+                //save the board -- special case 
+                String move = "S"; 
+                move += "B" + i + 0; //original is 0
+                move += "B" + 6 + boardB[6]; //mancala for B 
+                move += "A" + counterA + temp; //original for opposite A pit 
+                
                 boardA[counterA] = 0; // reset to 0
-                boardB[6] = temp + 1; // puts those stones in the mancala plus the extra one
+                boardB[6] = boardB[6] + temp + 1; // puts those stones in the mancala plus the extra one
                 stonesLeft--;
+                
+                stack.push(move);
             }
             else if (stonesLeft > 0)
             {
                 if(i == 6 && !playerBTurn) //if its Players A turn, skip the Player's B mancala
                 {
                     continue;
+                }
+                //if the last stone is placed into your own mancala, you get a free turn
+                if (i == 6 && stonesLeft == 1)
+                {
+                    freeTurn = true;
+
                 }
                 boardB[i] = boardB[i] + numToAdd;
                 stonesLeft--;
@@ -312,33 +342,34 @@ public class BoardModel {
             goThroughBoardA(stonesLeft, 0);
         }
     }
-    
-    
+
+
     /**
      * Checks if Players A or Bs pits are empty
      * @return emptyPits true for one player
      */
-    public boolean isGameFinished()
+    public String isGameFinished()
     {
-        boolean emptyPits = false;
-        
+        String emptyPits = "";
+
         //Go through boardA
         for(int i = 0; i < boardA.length -1; i ++)
         {
             //Checks if pit i is empty
             if(boardA[i] == 0 )
             {
-                emptyPits = true;
+                emptyPits = "A";
+
             }
             else
             {
-                emptyPits = false;
+                emptyPits = "N";
                 break;
             }
         }
-        
+
         //If Player A Pits is not empty
-        if (!emptyPits)
+        if (emptyPits.equals("N"))
         {
             //Go through boardB
             for (int i = 0; i < boardB.length - 1; i++)
@@ -346,27 +377,48 @@ public class BoardModel {
                 //Checks if pit is empty
                 if (boardB[i] == 0)
                 {
-                    emptyPits = true;
+                    emptyPits = "B";
                 } else {
-                    emptyPits = false;
+                    emptyPits = "N";
                     break;
                 }
             }
         }
-        
+
+        // Puts the remaining stones into the players mancala
+        int temp = 0;
+        if(emptyPits.equals("A"))
+        {
+            for(int i = 0; i < boardB.length -1; i ++)
+            {
+                temp += boardB[i];
+                boardB[i] = 0;
+            }
+            boardB[6] += temp;
+        }
+        else if(emptyPits.equals("B"))
+        {
+            for(int i = 0; i < boardA.length -1; i ++)
+            {
+                temp += boardA[i];
+                boardA[i] = 0;
+            }
+            boardA[6] += temp;
+        }
+        update();
         return emptyPits;
     }
-    
+
     public int getUndo()
     {
         return undoChances;
     }
-    
+
     public int getPlayerUndo()
     {
         return playerUndoChances;
     }
-    
+
     public boolean stackIsEmpty()
     {
         int size = stack.size();
@@ -375,8 +427,8 @@ public class BoardModel {
         else
             return false;
     }
-    
-    
+
+
     public void emptyStack()
     {
         while(undoChances > 0)
@@ -385,8 +437,8 @@ public class BoardModel {
             undoChances--;
         }
     }
-    
-    
+
+
     /**
      * Undo the last move
      * @return true if move is undone
@@ -396,56 +448,151 @@ public class BoardModel {
     {
         if((undoChances > 0) && (playerUndoChances > 0))
         {
-            String move = stack.pop();
+        		String move = stack.pop();
             undoChances--;
-            String player = move.substring(0,1);
-            String pitStr = move.substring(1, 2);
-            String stonesStr = move.substring(2);
             
-            int pit = Integer.parseInt(pitStr);
-            int stone = Integer.parseInt(stonesStr);
+//            String first = null; 
+//            
+//            if(!stackIsEmpty())
+//            {
+//            		String secondMove = stack.pop(); 
+//            		first = secondMove.substring(0, 1);
+//            }
             
-            System.out.println("Player " + player + " turn on pit " + pit + " and " + stone + "stones");
+            String first = move.substring(0,1);
             
-            //undo the action by putting stones back in pit and calling placeStones with -1
-            numToAdd = -1;
-            stonesEmpty = stone;
-            
-            //get the board and correct pit
-            if(player.equals("A"))
+            if(first.equals("S"))
             {
-                boardA[pit - 1] = stone;
-                placeStones(false, pit);
+            		//special case
+            		return undoSpecial(move);
             }
             
-            else //player B
+            else 
             {
-                boardB[pit - 1] = stone;
-                placeStones(true, pit);
+            		String player = move.substring(0,1);
+                String pitStr = move.substring(1, 2);
+                String stonesStr = move.substring(2);
+
+                int pit = Integer.parseInt(pitStr);
+                int stone = Integer.parseInt(stonesStr);
+
+                System.out.println("Player " + player + " turn on pit " + pit + " and " + stone + "stones");
+
+                //undo the action by putting stones back in pit and calling placeStones with -1
+                numToAdd = -1;
+                stonesEmpty = stone;
+
+                //get the board and correct pit
+                if(player.equals("A"))
+                {
+                    boardA[pit - 1] = stone;
+                    placeStones(false, pit);
+                }
+
+                else //player B
+                {
+                    boardB[pit - 1] = stone;
+                    placeStones(true, pit);
+                }
+
+                //because place stones adds to the stack and increment chances
+                undoChances--;
+                stack.pop();
+
+                //after done
+                //reset to default values
+                numToAdd = 1;
+                stonesEmpty = 0;
+
+                //player has one less chance to undo
+                playerUndoChances--;
+                update();
+                return true;
             }
-            
-            //because place stones adds to the stack and increment chances
-            undoChances--;
-            stack.pop();
-            
-            //after done
-            //reset to default values
-            numToAdd = 1;
-            stonesEmpty = 0;
-            
-            //player has one less chance to undo
-            playerUndoChances--;
-            return true;
         }
-        
-        
+
+
         else
         {
             System.out.println("There are no more undo chances");
+            update();
             return false;
         }
+
     }
     
+    public boolean undoSpecial(String move)
+    {
+    		System.out.println("inside special undo");
+    		//undoing the special cases 
+    		//first character of substring tells whether it is a special case 
+    		
+    		//undo the other move to return the non special stones 
+    		//increment undo chances because they don't lose a chance just because it's special
+    		undoChances++;
+    		//undoChances++;
+    		undo(); 
+    		
+    		//now undo the special case 
+    		//Example: S A50 [1,2,3] A61 [4,5,6] B14 [7,8,9]
+    		System.out.println("special undo this: " + move);
+    		String playerStr = move.substring(1,2); 
+    		
+    		String pitPlayerStr = move.substring(2,3); 
+    		int pitPlayer = Integer.parseInt(pitPlayerStr); 
+    		
+    		String stonesPlayerStr = move.substring(3,4); 
+    		int stonesPlayer = Integer.parseInt(stonesPlayerStr);
+    		
+    		String mancalaPlayerStr = move.substring(6,7); 
+    		int mancalaPlayer = Integer.parseInt(mancalaPlayerStr);
+    		
+    		String pitOpponentStr = move.substring(8,9); 
+    		int pitOpponent = Integer.parseInt(pitOpponentStr);
+    		
+    		String stonesOpponentStr = move.substring(9); 
+    		int stonesOpponent = Integer.parseInt(stonesOpponentStr);
+    		
+    		if(playerStr.equals("A"))
+    		{	
+    			//it is player A's move 
+    			//restore last pit
+    			boardA[pitPlayer] = stonesPlayer; 
+    			//restore mancala
+    			boardA[6] = mancalaPlayer; 
+    			//restore opponent's pit 
+    			boardB[pitOpponent] = stonesOpponent;
+    			System.out.println("undid move for player A");
+    			
+    		}
+    		
+    		else
+    		{	
+    			//it is player B's move 
+    			//restore last pit
+    			boardB[pitPlayer] = stonesPlayer; 
+    			//restore mancala
+    			boardB[6] = mancalaPlayer; 
+    			//restore opponent's pit 
+    			boardA[pitOpponent] = stonesOpponent;
+    			System.out.println("undid move for player B");
+    		
+    		}
+    		//undoChances++;
+    		emptyStack();
+    		System.out.println("Empty stack: " + stackIsEmpty());
+    		update();
+    		return true;
+    }
+
+    public void setBoardA(int[] boardA) {
+        this.boardA = boardA;
+    }
+
+    public void setBoardB(int[] boardB) {
+        this.boardB = boardB;
+    }
+
     /**
      Adds a change listener to the board model
      @param listener the change listener to add
@@ -454,5 +601,13 @@ public class BoardModel {
     {
         listeners.add(listener);
     }
-    
+
+    /**
+     * Update the data in boardModel
+     */
+    public void update(){
+        ChangeEvent event = new ChangeEvent(this);
+        for (ChangeListener listener : listeners)
+            listener.stateChanged(event);
+    }
 }
