@@ -4,6 +4,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 /**
+ * Design A 
  * Style A of the game board
  * @author Yihua Li
  */
@@ -16,6 +17,7 @@ public class DesignA implements BoardFormatter {
     final static int S_WIDTH = 10;
 
 
+    
     @Override
     public Shape formatPitShape() {
         return new Ellipse2D.Double(0,0,PIT_WIDTH,PIT_HEIGHT);
