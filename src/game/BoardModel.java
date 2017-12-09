@@ -73,6 +73,10 @@ public class BoardModel {
             if (i == 6) //if mancala for player B
                 boardB[6] = 0;
         }
+  
+        ChangeEvent event = new ChangeEvent(this);
+        for (ChangeListener listener : listeners)
+            listener.stateChanged(event);
     }
 
     /**
