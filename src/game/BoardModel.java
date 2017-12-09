@@ -143,52 +143,43 @@ public class BoardModel {
 	 */
 	public void placeStones(boolean playerBTurn, int pit) 
 	{
-		if (pit == 7) 
+		int stonesLeft;
+
+		String move = ""; // to keep track of this move
+
+		if (!playerBTurn) // Player A's turn
 		{
-			System.out.println("Can Not Choose The Mancala");
-			
-		} 
-		
-		else 
-		{
-			int stonesLeft;
+			stonesLeft = boardA[pit - 1]; // how many stones to move
 
-			String move = ""; // to keep track of this move
+			move += "A";
+			move += pit;
+			move += stonesLeft;
 
-			if (!playerBTurn) // Player A's turn
-			{
-				stonesLeft = boardA[pit - 1]; // how many stones to move
+			stack.push(move);
 
-				move += "A";
-				move += pit;
-				move += stonesLeft;
+			boardA[pit - 1] = stonesEmpty; // all stones are taken from the chosen pit
 
-				stack.push(move);
-
-				boardA[pit - 1] = stonesEmpty; // all stones are taken from the chosen pit
-
-				// go through board A starting from chosen pit
-				goThroughBoardA(stonesLeft, pit);
-			}
-
-			else // Player B's turn
-			{
-				stonesLeft = boardB[pit - 1];
-
-				move += "B";
-				move += pit;
-				move += stonesLeft;
-
-				stack.push(move);
-
-				boardB[pit - 1] = stonesEmpty;
-
-				goThroughBoardB(stonesLeft, pit);
-			}
-
-			update();
-			undoChances++;
+			// go through board A starting from chosen pit
+			goThroughBoardA(stonesLeft, pit);
 		}
+
+		else // Player B's turn
+		{
+			stonesLeft = boardB[pit - 1];
+
+			move += "B";
+			move += pit;
+			move += stonesLeft;
+
+			stack.push(move);
+
+			boardB[pit - 1] = stonesEmpty;
+
+			goThroughBoardB(stonesLeft, pit);
+		}
+
+		update();
+		undoChances++;
 	}
 
     /**
@@ -425,14 +416,12 @@ public class BoardModel {
 
             else 
             {
-            	String player = move.substring(0,1);
-                String pitStr = move.substring(1, 2);
+            		String player = move.substring(0,1);
+            		String pitStr = move.substring(1, 2);
                 String stonesStr = move.substring(2);
 
                 int pit = Integer.parseInt(pitStr);
                 int stone = Integer.parseInt(stonesStr);
-
-                System.out.println("Player " + player + " turn on pit " + pit + " and " + stone + "stones");
 
                 //undo the action by putting stones back in pit and calling placeStones with -1
                 numToAdd = -1;
@@ -470,7 +459,6 @@ public class BoardModel {
 
         else
         {
-            System.out.println("There are no more undo chances");
             update();
             return false;
         }

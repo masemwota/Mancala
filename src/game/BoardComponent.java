@@ -108,7 +108,6 @@ public class BoardComponent extends JComponent implements ChangeListener
      */
     public void drawBoard(BoardFormatter b)
     {
-        System.out.println("Board Drawn");
         Color boardColor = b.formatBoardColor();
         panel1.setLayout(new BorderLayout());
 
@@ -134,7 +133,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //if a move is already made
-                    System.out.println("Undo chances / Stack is empty: " + boardModel.stackIsEmpty());
                     if (boardModel.stackIsEmpty()) {
                         if (!boardModel.playerBTurn)
                         {
@@ -148,7 +146,6 @@ public class BoardComponent extends JComponent implements ChangeListener
 
                         else
                         {
-                            System.out.println("Player B Move Read");
                             boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex - 7 + 1);
                         }
                     }
@@ -175,7 +172,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                 @Override
                 public void mouseClicked(MouseEvent e)
                 {
-                    System.out.println("Undo chances: " + boardModel.stackIsEmpty());
                     if(boardModel.stackIsEmpty())
                     {
 
@@ -190,8 +186,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                         }
                         else
                         {
-                            System.out.println("Player A Move Read");
-
                             boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
                         }
                     }
@@ -269,7 +263,6 @@ public class BoardComponent extends JComponent implements ChangeListener
         undo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Undo called");
                 boolean actionUndone = boardModel.undo();
                 boardModel.emptyStack();
                 if(!actionUndone)
@@ -296,7 +289,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                                 boardModel.freeTurn = false;
                             }
                             else {
-                                System.out.println("Move is done");
                                 boardModel.setTurn();
                                 boardModel.emptyStack();
                             }
@@ -370,7 +362,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                 //Mancala A => boardA[6]
                 if (pitsIndex == 6) {
                     for (int i = 0; i < boardModel.boardA[pitsIndex]; i++) {
-                        //System.out.println(boardModel.boardA[pitsIndex]);
                         Shape stones = b.formatMancalaStoneShape(boardModel.boardA[pitsIndex], i);
                         g2.setColor(b.formatStoneColor());
                         g2.draw(stones);
