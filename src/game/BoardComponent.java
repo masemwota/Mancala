@@ -9,7 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * View Component of the game
+ * View (GUI) Component of the game
  * @author Stan Yanakiev
  * @author Marietta Asemwota
  * @author Yihua Li
@@ -35,8 +35,10 @@ public class BoardComponent extends JComponent implements ChangeListener
     private JLabel manBStones;
 
 
-
-
+    /**
+     * Initialize the board component with a model
+     * @param m
+     */
     public BoardComponent(BoardModel m)
     {
         frame = new JFrame();
@@ -53,7 +55,9 @@ public class BoardComponent extends JComponent implements ChangeListener
     }
 
 
-
+    /**
+     * Get the decisions for the game like the design and number of stones
+     */
     public void getDecisions()
     {
         Object[] designs = {"Design C", "Design B", "Design A"};
@@ -98,6 +102,10 @@ public class BoardComponent extends JComponent implements ChangeListener
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    /**
+     * Draw the board with the given format
+     * @param b - the format and design to draw the baord with
+     */
     public void drawBoard(BoardFormatter b)
     {
         System.out.println("Board Drawn");
@@ -161,7 +169,7 @@ public class BoardComponent extends JComponent implements ChangeListener
             Pits pitCount = new Pits(pitCounterA);
             JLabel label1 = new JLabel(pitCount);
             // JButton button1 = new JButton();
-            // System.out.println("Outside of clicked: " + pitCounterA);
+  
             label1.addMouseListener(new MouseAdapter()
             {
                 @Override
@@ -185,7 +193,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                             System.out.println("Player A Move Read");
 
                             boardModel.placeStones(boardModel.playerBTurn, pitCount.pitsIndex + 1);
-                            // System.out.println("Inside of clicked: " + pitCount.pitsIndex);
                         }
                     }
 
@@ -195,8 +202,6 @@ public class BoardComponent extends JComponent implements ChangeListener
                     }
                 }
             });
-            //label1.add(button1);
-            //pitsPanel.add(button1);
             pitsPanel.add(label1);
 
         }
@@ -320,8 +325,6 @@ public class BoardComponent extends JComponent implements ChangeListener
         southPanel.add(undo);//end undo panel
         southPanel.add(moveDone);
 
-
-        //JPanel playerTurn = new JPanel();
         playerText = new JTextArea();
         playerText.setEditable(false);
 
@@ -338,7 +341,6 @@ public class BoardComponent extends JComponent implements ChangeListener
         panel1.add(pitsPanel, BorderLayout.CENTER);
         panel1.add(mancalaB, BorderLayout.WEST);
         panel1.add(southPanel,BorderLayout.SOUTH);
-        //panel1.add(playerTurn, BorderLayout.SOUTH);
         frame.add(panel1);
         frame.pack();
         frame.setVisible(true);
@@ -346,7 +348,7 @@ public class BoardComponent extends JComponent implements ChangeListener
     }
 
     /**
-     *  The pits and mancala that implemented as icons
+     *  The pits and mancala implemented as icons
      */
     public class Pits implements Icon {
         private int pitsIndex;
@@ -427,23 +429,16 @@ public class BoardComponent extends JComponent implements ChangeListener
 
     }
 
-
-    public void getInfo()
-    {
-        System.out.println("Design " + design +" chosen");
-        System.out.println(stones + " Stones Chosen");
-        System.out.println("-------------------------------");
-        boardModel.setStones(stones);
-    }
-
     @Override
+    /**
+     * When a change happens in the model, the view is notified and updates the GUI
+     */
     public void stateChanged(ChangeEvent e)
     {
         manAStones.setText("" + boardModel.boardA[6]);
         manBStones.setText("" + boardModel.boardB[6]);
         undo.setText("undo (" + boardModel.getPlayerUndo() + ")");
         frame.repaint();
-//        panel1.repaint();
 
         if(boardModel.playerBTurn)
             playerText.setText("Player B Turn");

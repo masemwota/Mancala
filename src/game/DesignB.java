@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 /**
- * Style A of the game board
+ * Style B of the game board
  */
 public class DesignB implements BoardFormatter {
     final static int MAN_HEIGHT = 200;

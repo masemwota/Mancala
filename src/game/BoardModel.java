@@ -7,6 +7,7 @@ import java.util.Deque;
 
 /**
  * This is model part of the program. It holds the board information
+ * The board information is all the pits and all the stones in the pit and mancala
  *
  * @author Marietta Asemwota
  * @author Stan Yanakiev
@@ -16,8 +17,6 @@ import java.util.Deque;
 public class BoardModel {
     int[] boardA;
     int[] boardB;
-    int[] tempA;
-    int[] tempB;
     int defaultStones;
     boolean freeTurn = false;//helper variable for freeTurn
     boolean playerBTurn; // false = Player A, true = player B
@@ -25,11 +24,14 @@ public class BoardModel {
     int stonesEmpty; //stones left in the pit after taken from -- standard is 0
 
     private ArrayList<ChangeListener> listeners;
-    private ArrayList<String> moves; //list of moves to help with undo
-    Deque<String> stack;
-    private int undoChances;
-    private int playerUndoChances;
+    Deque<String> stack; //list of moves to help with undo
+    private int undoChances; //to decide whether a move has been made, so can undo
+    private int playerUndoChances; //player can undo at most 3 times a turn
 
+    
+    /**
+     * Initialize the board model
+     */
     public BoardModel()
     {
         boardA = new int[7];
@@ -45,7 +47,6 @@ public class BoardModel {
 
         stack = new ArrayDeque<String>();
         undoChances = 0;
-        //The player can make undo at most 3 times at his turn.
         playerUndoChances = 3;
     }
 
@@ -72,10 +73,6 @@ public class BoardModel {
             if (i == 6) //if mancala for player B
                 boardB[6] = 0;
         }
-
-        System.out.println("Starting Board: ");
-        printStones();
-        System.out.println("-------------------------------");
     }
 
     /**
@@ -96,52 +93,18 @@ public class BoardModel {
         return boardB;
     }
 
+    /**
+     * Switch the player's turn and update the board
+     * the current player now has 3 chances to undo
+     */
     public void setTurn()
     {
         playerBTurn = !playerBTurn;
-        //can delete, moved to method 'update'
-//        ChangeEvent event = new ChangeEvent(this);
-//        for (ChangeListener listener : listeners)
-//            listener.stateChanged(event);
         update();
         playerUndoChances = 3;
     }
 
-    /**
-     * Print the current state of the board in console
-     * Only for development testing
-     */
-    public void printStones()
-    {
-        // PLAYER B (prints it backwards)
-        for (int i = boardB.length - 1; i >= 0; i--)
-        {
-            if(i == 6) //the mancala
-            {
-                System.out.print("{" + boardB[i] +  "} ");
-            }
-            else
-                System.out.print(boardB[i] + " ");
-        }
-        System.out.print("         <--- Player B");
-        System.out.println(" ");
-
-        //PLAYER A
-        System.out.print("    ");
-        for (int i = 0; i < boardA.length; i++)
-        {
-            if(i == 6) //the mancala
-            {
-                System.out.print("{" + boardA[i] +  "} ");
-            }
-            else
-                System.out.print(boardA[i] + " ");
-        }
-        System.out.print("     <--- Player A");
-        System.out.println("\n ");
-    }
-
-
+    
     /**
      * Given the board and a pit, check if the pit is empty
      * @param playerBTurn - the board to check through
@@ -170,73 +133,63 @@ public class BoardModel {
     }
 
 
-    /**
-     * Place stones from one pit to the others
-     *
-     * @param playerBTurn
-     *            - whose turn it is (who owns the pit)
-     * @param pit
-     *            - the pit to move from (1 - 7)
-     */
-    public void placeStones(boolean playerBTurn, int pit)
-    {
-    	if (pit == 7)
-        {
-            System.out.println("Can Not Choose The Mancala");
-        }
-        else
-        {
-            int stonesLeft;
+	/**
+	 * Place stones from one pit to the others
+	 *
+	 * @param playerBTurn
+	 *            - whose turn it is (who owns the pit)
+	 * @param pit
+	 *            - the pit to move from (1 - 7)
+	 */
+	public void placeStones(boolean playerBTurn, int pit) 
+	{
+		if (pit == 7) 
+		{
+			System.out.println("Can Not Choose The Mancala");
+			
+		} 
+		
+		else 
+		{
+			int stonesLeft;
 
-            String move = ""; //to keep track of this move
+			String move = ""; // to keep track of this move
 
-            if (!playerBTurn) // Player A's turn
-            {
-                stonesLeft = boardA[pit - 1];     // how many stones to move
+			if (!playerBTurn) // Player A's turn
+			{
+				stonesLeft = boardA[pit - 1]; // how many stones to move
 
-                move += "A";
-                move += pit;
-                move += stonesLeft;
+				move += "A";
+				move += pit;
+				move += stonesLeft;
 
-                stack.push(move);
+				stack.push(move);
 
-                boardA[pit - 1] = stonesEmpty;     // all stones are taken from the chosen pit
+				boardA[pit - 1] = stonesEmpty; // all stones are taken from the chosen pit
 
-                // go through board A starting from chosen pit
-                goThroughBoardA(stonesLeft, pit);
-                //setTurn();                         //opponents turn
-                printStones();
-                System.out.println("Player B's turn now");
-                System.out.println("-------------------------------");
-            }
+				// go through board A starting from chosen pit
+				goThroughBoardA(stonesLeft, pit);
+			}
 
-            else // Player B's turn
-            {
-                stonesLeft = boardB[pit - 1];
+			else // Player B's turn
+			{
+				stonesLeft = boardB[pit - 1];
 
-                move += "B";
-                move += pit;
-                move += stonesLeft;
-  
-                stack.push(move);
+				move += "B";
+				move += pit;
+				move += stonesLeft;
 
-                boardB[pit - 1] = stonesEmpty;
+				stack.push(move);
 
-                goThroughBoardB(stonesLeft, pit);
-                //setTurn(); // opponents turn
-                printStones();
-                System.out.println("Player A's turn now");
-                System.out.println("-------------------------------");
-            }
+				boardB[pit - 1] = stonesEmpty;
 
-            update();
+				goThroughBoardB(stonesLeft, pit);
+			}
 
-            //stack.push(move);
-            undoChances++;
-
-
-        }
-    }
+			update();
+			undoChances++;
+		}
+	}
 
     /**
      * Go through and place stones on Player A's side
@@ -248,11 +201,6 @@ public class BoardModel {
      */
     public void goThroughBoardA(int stonesLeft, int pit)
     {
-        //to make this able to traverse the board and subtract stones, be able to change numberToAdd
-        //numToAdd = 1;
-
-
-        //if pit == 0 -> start over
         for (int i = pit; i < boardA.length; i++)
         {
             // If it is our last stone to place and the pit has no stones,
@@ -413,16 +361,28 @@ public class BoardModel {
         return emptyPits;
     }
 
+    /**
+     * Get how many chances there are undo
+     * @return
+     */
     public int getUndo()
     {
         return undoChances;
     }
 
+    /**
+     * Get how many chances the player has to undo
+     * @return
+     */
     public int getPlayerUndo()
     {
         return playerUndoChances;
     }
 
+    /**
+     * Check is the stack is empty 
+     * @return true if it is; false otherwise
+     */
     public boolean stackIsEmpty()
     {
         int size = stack.size();
@@ -433,6 +393,9 @@ public class BoardModel {
     }
 
 
+    /**
+     * Empty the stack and reset variable
+     */
     public void emptyStack()
     {
         stack.clear();
@@ -515,13 +478,11 @@ public class BoardModel {
     
     /**
      * To undo the special cases where stones are stolen 
-     * @param move
-     * @return
+     * @param move - the string with the move to undo
+     * @return whether the move is undone - always true
      */
     public boolean undoSpecial(String move)
     {
-    		//System.out.println("inside special undo");
-  
     		//undo the other move to return the non special stones 
     		//increment undo chances because they don't lose a chance just because it's special
     		undoChances++;
