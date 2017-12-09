@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * Style A of the game board
+ * @author Yihua Li
  */
 public class DesignA implements BoardFormatter {
     final static int MAN_HEIGHT = 200;

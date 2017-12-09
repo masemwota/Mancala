@@ -264,9 +264,10 @@ public class BoardComponent extends JComponent implements ChangeListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean actionUndone = boardModel.undo();
-                boardModel.emptyStack();
                 if(!actionUndone)
                     JOptionPane.showMessageDialog(null, "There are no more undo chances. Mark move as done.");
+                else
+                		boardModel.emptyStack();
             }
         });
 

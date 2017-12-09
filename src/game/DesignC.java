@@ -5,6 +5,7 @@ import java.awt.geom.RoundRectangle2D;
 
 /**
  * Style C of the game board
+ * @author Stan Yanakiev
  */
 public class DesignC implements BoardFormatter {
     final static int MAN_HEIGHT = 200;

@@ -4,6 +4,8 @@ import java.awt.geom.Ellipse2D;
 
 /**
  * Style B of the game board
+ * 
+ * @author Marietta Asemwota
  */
 public class DesignB implements BoardFormatter {
     final static int MAN_HEIGHT = 200;
